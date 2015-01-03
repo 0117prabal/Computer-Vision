@@ -13,6 +13,7 @@ private:
 	Mat image;
 	Mat grayImage;
 	Mat IntegralImage;
+	Mat IntegralImageCV;
 
 public:
 
@@ -35,6 +36,8 @@ public:
 		}		
 
 		grayImage.convertTo(grayImage, CV_32F);
+		IntegralImage = calculateIntegralImage();
+		integral(grayImage, IntegralImageCV);
 	}
 
 	void computeIntensities(){
@@ -55,55 +58,55 @@ public:
 			waitKey(0);
 		}
 
+		destroyAllWindows();
 	}
 
-	float averageIntensityWithIntegral(Rect rect){
+	double averageIntensityWithIntegral(Rect rect){
 
-		return 0.f;
+		double sum = getSum(rect, IntegralImageCV);
+
+		return sum / (rect.height * rect.width);
 	}
 
-	float averageIntensityWithoutIntegral(Rect rect){
+	double averageIntensityWithoutIntegral(Rect rect){
 
-		IntegralImage = calculateIntegralImage();
-		return 0.f;
+		double sum = getSum(rect, IntegralImage);
+
+		return sum / (rect.height * rect.width);
 	}
 
 	Mat calculateIntegralImage(){
 
-		Mat ret = Mat::zeros(grayImage.rows, grayImage.cols, CV_32F);
+		Mat ret = Mat::zeros(grayImage.rows+1, grayImage.cols+1, CV_64F);
 
-		for(int i = 0 ; i < grayImage.rows ; i++){
-			for(int j = 0 ; j <grayImage.cols ; j++){
+		double rowSum = 0.0;
 
-				ret.at<float>(i,j) = integralImage(i, j, ret);
+		for(int i = 1 ; i < grayImage.rows ; i++){
+			
+			rowSum = 0.0;
+
+			for(int j = 1 ; j <grayImage.cols ; j++){
+
+				rowSum += grayImage.at<float>(i-1, j-1);
+				ret.at<double>(i,j) = ret.at<double>(i-1, j) + rowSum;
+				
 			}
 
-			cout<<i<<endl;
 		}
 
 		return ret;
 	}
 
-	float integralImage(int i, int j, Mat integral){
+	double getSum(Rect rect, Mat IntegralImage){
 
-		float count = 0.f;
+		double sum(0.0);
 
-		if(i-1 >= 0){
-			count += integralImage(i-1, j, integral);
-		}
+		sum = IntegralImage.at<double>(rect.y + rect.height, rect.x + rect.width)
+			- IntegralImage.at<double>(rect.y + rect.height, rect.x)
+			- IntegralImage.at<double>(rect.y, rect.x + rect.width)
+			+ IntegralImage.at<double>(rect.y, rect.x);
 
-		if(j-1 >= 0){
-			count += integralImage(i, j-1, integral);
-		}
-
-		if(i-1 >= 0 && j-1 >= 0){
-
-			count -= integralImage(i-1, j-1, integral);
-		}
-
-		count += grayImage.at<float>(i,j);
-
-		return count;
+		return sum; 
 	}
 
 	float averageIntensityManual(Rect rect){
@@ -111,7 +114,6 @@ public:
 		float avgIntensity = 0.f;
 
 		Mat temp = grayImage(rect).clone();
-		//temp.convertTo(temp, CV_32F);
 
 		for(int i = 0 ; i < temp.rows ; i++){
 			for(int j = 0 ; j < temp.cols ; j++){
@@ -145,7 +147,7 @@ public:
 
 	~IntegralImages(){
 
-		// nothing to do here
+		//nothing to do here
 
 	}
 

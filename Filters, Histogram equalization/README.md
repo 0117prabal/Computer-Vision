@@ -8,4 +8,4 @@ make
 
 To run the program go back to the main folder and use the following command:
 
-./bin/project1 images/bonn.png
+'./bin/project1 images/bonn.png'
