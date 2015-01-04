@@ -4,6 +4,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include "Pyramids.cpp"
 #include "ImageBlending.cpp"
+#include "ChamferMatching.cpp"
 
 using namespace std;
 using namespace cv;
@@ -14,6 +15,9 @@ int main(int argc, char** argv){
 
 	ImageBlending blending("images/apple.jpg", "images/orange.jpg");
 	blending.showBlendedImage();
+
+	ChamferMatching matching("images/traffic.jpg", "images/sign.png", 2);
+	matching.detect();
 
 	return 0;
 }
