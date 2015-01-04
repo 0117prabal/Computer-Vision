@@ -3,6 +3,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include "Pyramids.cpp"
+#include "ImageBlending.cpp"
 
 using namespace std;
 using namespace cv;
@@ -10,6 +11,9 @@ using namespace cv;
 int main(int argc, char** argv){
 
 	Pyramids pyramids("images/traffic.jpg", 3);
+
+	ImageBlending blending("images/apple.jpg", "images/orange.jpg");
+	blending.showBlendedImage();
 
 	return 0;
 }

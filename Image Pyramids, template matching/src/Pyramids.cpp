@@ -1,3 +1,6 @@
+#ifndef _PYRAMID
+#define _PYRAMID
+
 #include <iostream>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -29,6 +32,15 @@ public:
 		run();
 	}
 
+	Pyramids(Mat image, int level){
+
+		assert(image.data);
+
+		this->level = level;
+		this->image = image;
+		run();
+	}
+
 	void run(){
 
 		usingBuiltInFunction();
@@ -49,7 +61,7 @@ public:
 		}
 	}
 
-	void showPyramid(vector<Mat> images){
+	static void showPyramid(vector<Mat> images){
 
 		for(int i = 0 ; i < images.size() ; i++){
 			imshow((i+1)+"", images[i]);
@@ -90,3 +102,5 @@ public:
 	}
 
 };
+
+#endif
