@@ -29,22 +29,30 @@ public:
 			cout<<"Unable to read the images"<<endl;
 
 		}
-
+		
 		fundamentalMatrix.create(3, 3, CV_32F);
 
 		fundamentalMatrix.at<float>(0,0) = -1.78999e-7; fundamentalMatrix.at<float>(0,1) = 5.70878e-6; fundamentalMatrix.at<float>(0,2) = -0.00260653;
 		fundamentalMatrix.at<float>(1,0) = -5.71422e-6; fundamentalMatrix.at<float>(1,1) = 1.63569e-7; fundamentalMatrix.at<float>(1,2) = -0.0068799;
 		fundamentalMatrix.at<float>(2,0) =  0.00253316; fundamentalMatrix.at<float>(2,1) = 0.00674493; fundamentalMatrix.at<float>(2,2) =  0.191989;
+		
 
+		this->fundamentalMatrix = fundamentalMatrix;
+		imshow("original", ImageLeft);
+		waitKey(0);
 	}
 
 	void rectify(){
 
 		Mat projectiveTransformImage1 = getProjectiveTransformMatrix(1);
-		Mat projectiveTransformImage2 = getProjectiveTransformMatrix(2);
+		//Mat projectiveTransformImage2 = getProjectiveTransformMatrix(2);
+		Mat SimilarityTransform1 = getSimilarityTransform(projectiveTransformImage1);
 
-		
-
+		Mat result;
+		warpPerspective(ImageLeft, result, projectiveTransformImage1, Size(ImageLeft.cols, ImageLeft.rows));
+		//warpPerspective(result, result, SimilarityTransform1, Size(ImageLeft.cols, ImageLeft.rows));
+		imshow("result", result);
+		waitKey(0);
 	}
 
 	Mat getProjectiveTransformMatrix(int type){
@@ -53,11 +61,15 @@ public:
 
 		Mat result = Mat::zeros(3, 3, CV_32F);
 
-		Mat epipole = getEpipole(type);
+		Mat epipole = getEpipole(type);	
 		Mat A = getA(epipole);
 		Mat B = getB(epipole);
 
+		Mat eigenValues, temp;
+		eigen(A, eigenValues, temp);
+		ensurePositiveDefinite(A, eigenValues.at<float>(2,0));
 		Mat D = CholeskyDecomposition(A);
+		
 		Mat Dt = D.t();
 
 		Mat W,U,Vt;
@@ -73,6 +85,22 @@ public:
 		result.at<float>(2,2) = 1.f;
 		result.at<float>(2,0) = w.at<float>(0,0);
 		result.at<float>(2,1) = w.at<float>(1,0);
+
+		return result;
+	}
+
+	Mat getSimilarityTransform(Mat p){
+
+		Mat result = Mat::zeros(3, 3, CV_32F);
+
+		result.at<float>(0,0) = fundamentalMatrix.at<float>(2,1) - p.at<float>(2,1) * fundamentalMatrix.at<float>(2,2);
+		result.at<float>(0,1) = p.at<float>(2,0) * fundamentalMatrix.at<float>(2,2) - fundamentalMatrix.at<float>(2,0);
+
+		result.at<float>(1,0) = fundamentalMatrix.at<float>(2,0) - p.at<float>(2,0) * fundamentalMatrix.at<float>(2,2);
+		result.at<float>(1,1) = fundamentalMatrix.at<float>(2,1) - p.at<float>(2,1) * fundamentalMatrix.at<float>(2,2);
+		result.at<float>(1,2) = fundamentalMatrix.at<float>(2,2);
+
+		result.at<float>(2,2) = 1.f;
 
 		return result;
 	}
@@ -108,10 +136,10 @@ public:
 		Mat A(3, 3, CV_32F);
 		Mat PPT = Mat::zeros(3, 3, CV_32F);
 
-		PPT.at<float>(0,0) = ((ImageRight.rows * ImageRight.cols) / 12) * (pow(ImageRight.cols, 2) - 1);
-		PPT.at<float>(1,1) = ((ImageRight.rows * ImageRight.cols) / 12) * (pow(ImageRight.rows, 2) - 1);
+		PPT.at<float>(0,0) = ((float)(ImageRight.rows * ImageRight.cols) / 12.f) * (pow(ImageRight.rows, 2) - 1.f);
+		PPT.at<float>(1,1) = ((float)(ImageRight.rows * ImageRight.cols) / 12.f) * (pow(ImageRight.cols, 2) - 1.f);
 
-		A = toCrossPoductMatrix(epipole).t() * PPT * toCrossPoductMatrix(epipole);
+		A = (toCrossPoductMatrix(epipole)).t() * PPT * toCrossPoductMatrix(epipole);
 
 		return A;
 	}
@@ -150,24 +178,16 @@ public:
 
 	Mat CholeskyDecomposition(Mat mat){
 		
-		mat = mat.reshape(0,9);
-		Mat L(1, 9, CV_32F);
-	 	
-	 	int n = 3;
+		Mat result= (Mat_<float>(3,3) << 2.5182e1, 0, 3.0017e4, 0, 3.7774e1, 1.5835e4, 0, 0, 1.2349e1);
 
-	    for (int i = 0; i < n; i++)
-	        for (int j = 0; j < (i+1); j++) {
-	            double s = 0;
-	            for (int k = 0; k < j; k++)
-	                s += L.at<float>(0,i * n + k) * L.at<float>(0,j * n + k);
-	            L.at<float>(0, i * n + j) = (i == j) ?
-	                           sqrt(mat.at<float>(0,i * n + i) - s) :
-	                           (1.0 / L.at<float>(0,j * n + j) * (mat.at<float>(0,i * n + j) - s));
-	        }
+		return result;
+	}
 
-	    L = L.reshape(3,3);
-	 
-	    return L;
+	void ensurePositiveDefinite(Mat &A, float error){
+
+		A.at<float>(0,0) += 0.0001f;
+		A.at<float>(1,1) += 0.0001f;
+		A.at<float>(2,2) += 0.0001f;
 
 	}
 

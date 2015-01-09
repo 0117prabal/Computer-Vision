@@ -30,7 +30,8 @@ public:
 	}
 
 	void visualize(){
-
+		
+		cout<<endl<<"Part 2"<<endl;
 		image1 = imread("images/apt1.jpg", 1);
 		image2 = imread("images/apt2.jpg", 1);
 

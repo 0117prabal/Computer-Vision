@@ -11,20 +11,20 @@ using namespace std;
 using namespace cv;
 
 int main(int argc, char* argv[]){
-
+/*
 	Parser parser("images/corresp.txt");
 	parser.parse();
 
 	EpipolarGeometry ep(parser.getImageOnePoints(), parser.getImageTwoPoints());
 	ep.calculateFundamentalMatrix();
 	ep.visualize();
-/*
+
 	DisparityMap map;
-	map.run();
+	map.run();*/
 
 	ImageRectification rectifier;
 	rectifier.rectify();
-*/
+
 
 
     return 0;

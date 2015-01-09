@@ -19,7 +19,8 @@ private:
 public:
 
 	DisparityMap(){
-
+		
+		cout<<endl<<"Part 3"<<endl;
 		image1 = imread("images/aloe1.png", 0);
 		image2 = imread("images/aloe2.png", 0);
 
@@ -40,14 +41,12 @@ public:
 
 		//cout<<image1.rows<<endl;   370
 		//cout<<image1.cols<<endl;	 427
+		cout<<"Calculating disparity map"<<flush;
 
-		for(int i =  0 ; i < image1.rows-10 ; i++){
-			for(int j = 0 ; j < image1.cols-7 ; j++){
+		for(int i =  0 ; i < image1.rows / patchHeight ; i++){
+			for(int j = 0 ; j < image1.cols / patchWidth ; j++){
 
-				Rect rect(j,i,patchWidth,patchHeight);
-				/*rectangle(image1, Point(j*patchWidth, i*patchHeight), Point(j*patchWidth + patchWidth, i*patchHeight + patchHeight), Scalar(0, 0, 255), 1, 8, 0);
-				imshow("rew",image1);
-				waitKey(0);*/
+				Rect rect(j*patchWidth ,i*patchHeight ,patchWidth,patchHeight);
 				Mat result;
 				Mat patch = image1(rect).clone();
 				int result_cols =  image2.cols - patch.cols + 1;
@@ -57,12 +56,16 @@ public:
 				normalize( result, result, 0, 1, NORM_MINMAX, -1, Mat());
 				Point minLoc;
 			    minMaxLoc(result, NULL, NULL, &minLoc, NULL, Mat());
-			    saveToMap(patch, minLoc, i, j, patchHeight, patchWidth);
+			    saveToMap(patch, minLoc, i*patchHeight, j*patchWidth, patchHeight, patchWidth);
 
 			}
+
+			cout<<"."<<flush;
 		}
 
-		disparityMap.convertTo(disparityMap, CV_8U);
+		double max;
+		minMaxLoc(disparityMap, NULL, &max, NULL, NULL, Mat());
+		disparityMap.convertTo(disparityMap, CV_8U, 255.0/max);
 		imshow("Disparity Map", disparityMap);
 		waitKey(0);
 
@@ -75,7 +78,6 @@ public:
 
 		Mat result;
 		absdiff(one, two, result);
-		//absdiff(patch, image2(Rect(location.x, location.y, patchWidth, patchHeight)).clone(), result);
 		result.copyTo(disparityMap.rowRange(i, i+patchHeight).colRange(j, j+patchWidth));
 
 	}

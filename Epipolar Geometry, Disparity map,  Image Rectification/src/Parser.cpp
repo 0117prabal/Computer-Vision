@@ -16,7 +16,8 @@ private:
 public:
 
 	Parser(string filename){
-
+		
+		cout<<endl<<"Part 1"<<endl;
 		this->filename = filename;
 
 	}
