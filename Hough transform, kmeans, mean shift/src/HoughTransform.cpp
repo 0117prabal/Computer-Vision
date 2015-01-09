@@ -83,8 +83,8 @@ public:
 
 					for(double theta = 0.0; theta < M_PI*2 ; theta += 0.1){
 
-						int a = static_cast<int>(round((i+1) - (r+1)*cos(theta)));
-						int b = static_cast<int>(round((j+1) + (r+1)*sin(theta)));
+						int a = static_cast<int>(round((i+1) - (r+1)*cos(theta))) / 2.f;
+						int b = static_cast<int>(round((j+1) + (r+1)*sin(theta))) / 2.f;
 
 						if (a<0 || b<0 || a>=accum[r].cols || b>=accum[r].rows){
 
@@ -99,6 +99,31 @@ public:
 
 			}
 		}
+
+		double tmpMin, tmpMax;
+		Point tmpMinPt, tmpMaxPt;
+		int max_rrr_Idx;
+		Point maxPt;
+		double maxVal = -999;
+
+		for(int r = 0 ; r < 5 ; r++){
+
+			minMaxLoc(accum[r], &tmpMin, &tmpMax, &tmpMinPt, &tmpMaxPt);
+
+			if (tmpMax > maxVal){
+
+    	    	maxVal = tmpMax;
+                maxPt = tmpMaxPt;
+                max_rrr_Idx = r;
+            }
+
+		}
+
+		Mat accumDISP;
+        accum[max_rrr_Idx].convertTo( accumDISP, CV_8UC1, 255/maxVal );
+        imshow("image",accumDISP);
+        waitKey(0);
+
 	}
 
 	~HoughTransform(){
