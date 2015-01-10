@@ -1,4 +1,4 @@
-This folder contains the implementations of Hough transforms, KMeans algorithm and the Mean shift algorithm
+This folder contains the implementations of Epipolar geometry, Disparity maps and Image rectification
 
 To compile the code using CMakeLists.txt do the following in the directory:
 ```bash
