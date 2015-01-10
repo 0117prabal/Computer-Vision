@@ -3,6 +3,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include "HoughTransform.cpp"
+#include "KMeans.cpp"
 
 using namespace std;
 using namespace cv;
@@ -10,8 +11,11 @@ using namespace cv;
 
 int main(int argc, char** argv){
 
-	HoughTransform ht("images/circles.png");
-	ht.run();
+	/*HoughTransform ht("images/circles.png");
+	ht.run();*/
+
+	KMeans kmeans("images/flower.png");
+	kmeans.run();
 
 	return 0;
 }
