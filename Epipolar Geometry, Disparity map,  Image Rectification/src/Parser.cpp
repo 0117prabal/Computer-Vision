@@ -52,9 +52,7 @@ public:
 		}
 
 		datafile.close();
-
-		print(ImageOnePoints);
-
+		
 	}
 
 	void print(vector<Point2f> points){
