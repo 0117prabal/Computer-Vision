@@ -11,7 +11,7 @@ using namespace std;
 using namespace cv;
 
 int main(int argc, char* argv[]){
-/*
+
 	Parser parser("images/corresp.txt");
 	parser.parse();
 
@@ -20,9 +20,9 @@ int main(int argc, char* argv[]){
 	ep.visualize();
 
 	DisparityMap map;
-	map.run();*/
+	map.run();
 
-	ImageRectification rectifier;
+	ImageRectification rectifier(ep.getImage1(), ep.getImage2());
 	rectifier.rectify();
 
 

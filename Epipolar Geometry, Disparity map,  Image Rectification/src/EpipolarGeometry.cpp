@@ -45,7 +45,8 @@ public:
 		drawPoints(image1, ImageOnePoints);
 		drawPoints(image2, ImageTwoPoints);
 
-		drawEpipolarLines(image2, ImageOnePoints);
+		drawEpipolarLines(image2, ImageOnePoints, 1);
+		drawEpipolarLines(image1, ImageTwoPoints, 2);
 
 		imshow("Frame 1", image1);
 		waitKey(0);
@@ -53,6 +54,7 @@ public:
 		imshow("Frame 2", image2);
 		waitKey(0);
 
+		destroyAllWindows();
 	}
 
 	void calculateFundamentalMatrix(){
@@ -210,14 +212,24 @@ public:
 
 	}
 
-	void drawEpipolarLines(Mat & image, vector<Point2f> points){
+	void drawEpipolarLines(Mat & image, vector<Point2f> points, int type){
 
 		assert(fundamentalMatrix.data != NULL);
+		assert(type == 1 || type ==2);
 
 		for(int i = 0 ; i < points.size() ; i++){
 
 			Mat temp = toMat(points[i]);
-			temp = fundamentalMatrix * temp;
+			
+			if(type == 1){
+
+				temp = fundamentalMatrix * temp;
+
+			}
+			else{
+
+				temp = temp.t() * fundamentalMatrix;
+			}
 
 			float y1 = (-temp.at<float>(0,2)) / temp.at<float>(0,1);
 			float y2 = (temp.at<float>(0,0) * image.cols + temp.at<float>(0,2)) / -temp.at<float>(0,1);
@@ -243,6 +255,16 @@ public:
 	Mat getFundamentalMatrix(){
 
 		return fundamentalMatrix;
+	}
+
+	Mat getImage1(){
+
+		return image1;
+	}
+
+	Mat getImage2(){
+
+		return image2;
 	}
 
 	~EpipolarGeometry(){

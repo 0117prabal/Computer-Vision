@@ -4,6 +4,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include "HoughTransform.cpp"
 #include "KMeans.cpp"
+#include "MeanShift.cpp"
 
 using namespace std;
 using namespace cv;
@@ -16,6 +17,8 @@ int main(int argc, char** argv){
 
 	KMeans kmeans("images/flower.png");
 	kmeans.run();
+
+	MeanShift shift;
 
 	return 0;
 }

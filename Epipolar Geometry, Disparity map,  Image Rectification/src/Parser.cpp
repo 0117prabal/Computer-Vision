@@ -53,6 +53,20 @@ public:
 
 		datafile.close();
 
+		print(ImageOnePoints);
+
+	}
+
+	void print(vector<Point2f> points){
+
+		for(int i = 0 ; i < points.size() ; i++){
+
+			cout<<points[i].x<<endl;
+			cout<<points[i].y<<endl;
+			cout<<endl;
+			
+		}
+		
 	}
 
 	vector<Point2f> getImageOnePoints(){

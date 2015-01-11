@@ -63,12 +63,15 @@ public:
 			cout<<"."<<flush;
 		}
 
+		cout<<endl;
+
 		double max;
 		minMaxLoc(disparityMap, NULL, &max, NULL, NULL, Mat());
 		disparityMap.convertTo(disparityMap, CV_8U, 255.0/max);
 		imshow("Disparity Map", disparityMap);
 		waitKey(0);
 
+		destroyAllWindows();
 	}
 
 	void saveToMap(Mat patch, Point location, int i, int j, int patchHeight, int patchWidth){
