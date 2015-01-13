@@ -13,12 +13,13 @@ using namespace cv;
 int main(int argc, char** argv){
 
 	/*HoughTransform ht("images/circles.png");
-	ht.run();*/
+	ht.run();
 
 	KMeans kmeans("images/flower.png");
-	kmeans.run();
+	kmeans.run();*/
 
-	MeanShift shift;
+	MeanShift shift("images/flower.png");
+	shift.run();
 
 	return 0;
 }
