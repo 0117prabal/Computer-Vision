@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 project(Project04)
 include_directories(src)
+SET(CMAKE_CXX_FLAGS "-std=c++0x")
 set(dir ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 set(EXECUTABLE_OUTPUT_PATH ${dir} CACHE PATH "Build directory" FORCE)
 set(LIBRARY_OUTPUT_PATH ${dir} CACHE PATH "Build directory" FORCE)
