@@ -89,12 +89,89 @@ class Snakes{
             int cccOFF_Y, cccOFF_X;
             define_OFFs(ccc, cccOFF_Y, cccOFF_X);
 
+            float termUNARY = term_Unary(Point2i( snake[vvv].x+cccOFF_X, snake[vvv].y+cccOFF_Y ), gx, gy);
 
+            energies(ccc,vvv) = FLT_MAX;
+            position(ccc,vvv) = -1;
+            // test all possible states (local neighborhood) of previous (ppp) node
+            for (int ppp=0; ppp < kkkTOTAL; ppp++){
+
+              int pppOFF_Y, pppOFF_X;
+              define_OFFs(ppp, pppOFF_Y, pppOFF_X);
+              // test all possible states (local neighborhood) of next (nnn) node
+              for (int nnn=0; nnn<kkkTOTAL; nnn++){
+
+                  int nnnOFF_Y, nnnOFF_X;
+                  define_OFFs(nnn, nnnOFF_Y, nnnOFF_X);
+                  int VVV = verticesNumber;
+
+                  double energyTMP; 
+
+                  if(vvv==0){
+
+                    energyTMP = termUNARY + energies(ppp,vvv-1) + term_Binary(Point2i(snake[vvv+0].x+cccOFF_X, snake[vvv+0].y+cccOFF_Y ), Point2i(snake[VVV-1].x+pppOFF_X, snake[VVV-1].y+pppOFF_Y), Point2i(snake[vvv+1].x+nnnOFF_X, snake[vvv+1].y+nnnOFF_Y), 0.00001, 0.000005, dist);
+
+                  }               
+                  
+                  else if(vvv==VVV-1){
+
+                    energyTMP = termUNARY + energies(ppp,vvv-1) + term_Binary(Point2i(snake[vvv+0].x+cccOFF_X, snake[vvv+0].y+cccOFF_Y), Point2i(snake[vvv-1].x+pppOFF_X, snake[vvv-1].y+pppOFF_Y), Point2i(snake[0].x+nnnOFF_X, snake[0].y+nnnOFF_Y ), 0.00001, 0.000005, dist);
+
+                  }
+
+                  else{
+
+                    energyTMP = termUNARY + energies(ppp,vvv-1) + term_Binary(  cv::Point2i( snake[vvv+0].x+cccOFF_X, snake[vvv+0].y+cccOFF_Y ), Point2i( snake[vvv-1].x+pppOFF_X, snake[vvv-1].y+pppOFF_Y ), Point2i( snake[vvv+1].x+nnnOFF_X, snake[vvv+1].y+nnnOFF_Y ), 0.00001, 0.000005, dist);
+                    
+                  }
+
+                  
+                  if (energies(ccc,vvv) > energyTMP){
+
+                   energies(ccc,vvv) = energyTMP;
+                   position(ccc,vvv) = ppp;
+
+                  }
+
+              }
+            }
           }
         }
 
 
-      } while(iii < 10000 &&& nodesChanged > 0);
+        int posID = find_MIN_ID_inColumn(energies, energies.cols-1);
+
+        for (int vvv=verticesNumber-1; vvv>=0; vvv--){
+
+            posID = position(posID,vvv);
+            int off_Y, off_X;
+            define_OFFs(posID, off_Y, off_X);
+            
+            int prevID;
+
+            if (vvv>0)
+              prevID = vvv-1;
+            else
+              prevID = verticesNumber-1;
+            
+            snake[prevID].x += off_X;
+            snake[prevID].y += off_Y;
+
+            if (off_X != 0 || off_Y != 0)
+              nodesChanged++;
+        }
+
+        cout << iii << ":\t" << nodesChanged << " nodes of the snake changed" <<endl;
+        imageFloat.copyTo(vis);
+        drawSnake(vis, snake);
+        imshow("Snake", vis);
+        waitKey(10);
+
+
+      } while(iii < 10000 && nodesChanged > 0);
+
+       waitKey();
+       destroyAllWindows();
 
   }
 
@@ -181,6 +258,46 @@ class Snakes{
             break;
     }
 
+  }
+
+
+  float term_Unary(const Point2i & p_curr, const Mat_<float> & gx, const Mat_<float> & gy){
+    
+    return -(pow(gx(p_curr), 2) + pow(gy(p_curr), 2));
+
+  }
+
+  float term_Binary(const Point2i& p_curr, const Point2i& p_prev, const Point2i& p_next, const float alpha, const float beta, const float dist){
+
+       return term_Binary_Elasticity(p_curr, p_prev, alpha, dist) + term_Binary_Curvature(p_curr, p_prev, p_next, beta);
+  }
+
+  float term_Binary_Elasticity(const Point2i& p_curr, const Point2i& p_prev, const float alpha, const float dist){
+
+       return alpha * pow(sqrt(pow(p_prev.x - p_curr.x, 2) + pow(p_prev.y - p_curr.y, 2) ) - dist, 2);
+  }
+
+  float term_Binary_Curvature(const Point2i& p_curr, const Point2i& p_prev, const Point2i& p_next, const float beta){
+
+       return beta * (pow(p_next.x - 2 * p_curr.x + p_prev.x, 2) + pow(p_next.y - 2 * p_curr.y + p_prev.y, 2));
+  }
+
+  int find_MIN_ID_inColumn(const Mat_<float>& mat, int colID){
+
+      float currMIN_Val = +999999;
+      float currMIN_IDD = +999999;
+
+      for (int iii=0; iii<mat.rows; iii++){
+
+          if (currMIN_Val > mat(iii,colID)){
+            
+            currMIN_Val = mat(iii,colID);
+            currMIN_IDD = iii;
+
+          }
+      }
+
+      return currMIN_IDD;
   }
 
   ~Snakes(){
