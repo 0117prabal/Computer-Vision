@@ -11,10 +11,10 @@ class GMEM{
 private:
 
 	Mat image;
-	int    PARAM_Max_Iter_Numb    = 1;
-	double PARAM_Epsilon_converge = 5.0;
-	double PARAM_Epsilon_assert   = FLT_EPSILON;
-	int    GMM_Mixtures_Number    = 10;
+	int    PARAM_Max_Iter_Numb;
+	double PARAM_Epsilon_converge;
+	double PARAM_Epsilon_assert;
+	int    GMM_Mixtures_Number;
 
 public:
 
@@ -26,6 +26,11 @@ public:
 
 			cout<<"Unable to read the image"<<endl;
 		}
+
+		PARAM_Max_Iter_Numb    = 1;
+		PARAM_Epsilon_converge = 5.0;
+		PARAM_Epsilon_assert   = FLT_EPSILON;
+		GMM_Mixtures_Number    = 10;
 	}
 
 
@@ -44,7 +49,9 @@ public:
 	    cv::imshow("gnome with rectangle", viz);
 	    waitKey(0);
 
-	    //GMMs_withOpenCV(image, mask);
+	    GMMs_withOpenCV(image, mask);
+
+	    destroyAllWindows();
 
 	    GMMs_Custom(image, mask);
 	}
