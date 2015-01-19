@@ -52,7 +52,7 @@ public:
 	void GMMs_Custom( const cv::Mat& gnome_INI, const cv::Mat& mask ){
 
 	    cv::Mat gnome_norm;
-	    gnome_INI.convertTo(   gnome_norm, CV_32FC3, (1.0/255.0) ); // image normalized [0,255] -> [0,1]
+	    gnome_INI.convertTo(gnome_norm, CV_32FC3, (1.0/255.0) ); // image normalized [0,255] -> [0,1]
 	    //gnome_norm.reshape( 1, gnome_norm.total() );
 
 	    cv::Mat all_samples, pos_samples, neg_samples;
@@ -76,21 +76,21 @@ public:
 	    /////////////////////////////////////////
 
 	    ///////////////////////////////////////////////
-	    pos_samples.convertTo( pos_samples, CV_32FC1 );
-	    neg_samples.convertTo( neg_samples, CV_32FC1 );
+	    pos_samples.convertTo(pos_samples, CV_32FC1);
+	    neg_samples.convertTo(neg_samples, CV_32FC1);
 	    ///////////////////////////////////////////////
 
 	    GMM_Initialize_with_KMeans( gnome_norm, GMM_Mixtures_Number, pos_samples, GMM_Mixtures_Means_pos, GMM_Mixtures_Covs_pos, "POS", false );
 	    GMM_Initialize_with_KMeans( gnome_norm, GMM_Mixtures_Number, neg_samples, GMM_Mixtures_Means_neg, GMM_Mixtures_Covs_neg, "NEG", false );
 
-	    invert_3x3s( GMM_Mixtures_Covs_pos, GMM_Mixtures_Covs_pos_INV );
-	    invert_3x3s( GMM_Mixtures_Covs_neg, GMM_Mixtures_Covs_neg_INV );
-	    sqrt_det(GMM_Mixtures_Covs_pos, GMM_Mixtures_Covs_pos_SQRT_DET );
-	    sqrt_det(GMM_Mixtures_Covs_neg, GMM_Mixtures_Covs_neg_SQRT_DET );
+	    invert_3x3s(GMM_Mixtures_Covs_pos, GMM_Mixtures_Covs_pos_INV);
+	    invert_3x3s(GMM_Mixtures_Covs_neg, GMM_Mixtures_Covs_neg_INV);
+	    sqrt_det(GMM_Mixtures_Covs_pos, GMM_Mixtures_Covs_pos_SQRT_DET);
+	    sqrt_det(GMM_Mixtures_Covs_neg, GMM_Mixtures_Covs_neg_SQRT_DET);
 
 	    ///////////////////////////////////////////////
-	    pos_samples.convertTo( pos_samples, CV_64FC1 );
-	    neg_samples.convertTo( neg_samples, CV_64FC1 );
+	    pos_samples.convertTo(pos_samples, CV_64FC1);
+	    neg_samples.convertTo(neg_samples, CV_64FC1);
 	    ///////////////////////////////////////////////
 
 	    GMM_Mixtures_Weights_INITIALIZE( GMM_Mixtures_Number, GMM_Mixtures_Weights_pos ); // initialize before executing EM
@@ -99,7 +99,7 @@ public:
 	    GMM_Mixtures_Weights_TEST(                            GMM_Mixtures_Weights_neg ); // test if weights sum up to 1
 
 	    ////////////////////////////////////////////////////////
-	    double likelihoodConstant = pow( (2*M_PI), 3/(float)2 ); // precompute constant needed for EM
+	    double likelihoodConstant = pow((2*M_PI), 3/(float)2); // precompute constant needed for EM
 	    ////////////////////////////////////////////////////////
 
 	    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -309,9 +309,9 @@ public:
 
 		}
 
-	    GMM_Samples_Means. convertTo(GMM_Samples_Means,  CV_64FC3);
+	    GMM_Samples_Means.convertTo(GMM_Samples_Means,  CV_64FC3);
 	    GMM_Mixtures_Means.convertTo(GMM_Mixtures_Means, CV_64FC1);
-		GMM_Mixtures_Covs.resize( GMM_Mixtures_Number);
+		GMM_Mixtures_Covs.resize(GMM_Mixtures_Number);
 
 	    for (int nnn=0; nnn < GMM_Mixtures_Number; nnn++){
 
@@ -458,12 +458,12 @@ public:
 
 	            /////////////////////////////////////////////////////////////
 	            /////////////////////////////////////////////////////////////
-	            invert_3x3s( GMM_Mixtures_Covs, GMM_Mixtures_Covs_INV      );
-	            sqrt_det(    GMM_Mixtures_Covs, GMM_Mixtures_Covs_SQRT_DET );
+	            invert_3x3s( GMM_Mixtures_Covs, GMM_Mixtures_Covs_INV  );
+	            sqrt_det(GMM_Mixtures_Covs, GMM_Mixtures_Covs_SQRT_DET );
 	            /////////////////////////////////////////////////////////////
 	            /////////////////////////////////////////////////////////////
-	            cv::Mat                                                                    GMM_Mixtures_Responsibility;                                           // CV_64FC1
-	            GMM_Mixtures_Responsibility_INITIALIZE( samples.rows, GMM_Mixtures_Number, GMM_Mixtures_Responsibility ); // initialize before executing EM
+	            cv::Mat GMM_Mixtures_Responsibility;                                           // CV_64FC1
+	            GMM_Mixtures_Responsibility_INITIALIZE(samples.rows, GMM_Mixtures_Number, GMM_Mixtures_Responsibility); // initialize before executing EM
 
 
 
@@ -480,12 +480,12 @@ public:
 	            // formula 7.17, page 110, Prince book /////////////////////////////////////////////////////////////////////////////////
 	            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	            for     (int iii=0; iii<III; iii++)
+	            for(int iii=0; iii<III; iii++)
 	            {   for (int kkk=0; kkk<KKK; kkk++)
 	                {
-	                    double                              denomin  = 0;
+	                    double denomin  = 0;
 	                    for (int jjj=0; jjj<KKK; jjj++)     denomin += myLikelihood( GMM_Mixtures_Weights.at<double>(jjj), samples.row(iii), GMM_Mixtures_Means.row(jjj), GMM_Mixtures_Covs_INV[jjj], GMM_Mixtures_Covs_SQRT_DET[jjj], likelihoodConstant );
-	                    double                                nomin  = myLikelihood( GMM_Mixtures_Weights.at<double>(kkk), samples.row(iii), GMM_Mixtures_Means.row(kkk), GMM_Mixtures_Covs_INV[kkk], GMM_Mixtures_Covs_SQRT_DET[kkk], likelihoodConstant );
+	                    double nomin  = myLikelihood(GMM_Mixtures_Weights.at<double>(kkk), samples.row(iii), GMM_Mixtures_Means.row(kkk), GMM_Mixtures_Covs_INV[kkk], GMM_Mixtures_Covs_SQRT_DET[kkk], likelihoodConstant);
 
 	                    GMM_Mixtures_Responsibility.at<double>(iii,kkk) = nomin / denomin;                                                                              // GMM_Mixtures_Responsibility
 	                }
@@ -506,7 +506,7 @@ public:
 	            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	            cv::Mat                                   GMM_Samples_MixtureMAXVAL;
-	            cv::reduce( GMM_Mixtures_Responsibility,  GMM_Samples_MixtureMAXVAL, 1, CV_REDUCE_MAX );
+	            cv::reduce(GMM_Mixtures_Responsibility,  GMM_Samples_MixtureMAXVAL, 1, CV_REDUCE_MAX);
 	            double           maxElementSum =  cv::sum(GMM_Samples_MixtureMAXVAL)[0];
 	            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	            double                              GMM_Samples_MixtureMAXVAL_SUM  = maxElementSum;
@@ -599,6 +599,29 @@ public:
 
 	    }
 
+	}
+
+	void GMM_Mixtures_Responsibility_INITIALIZE( const int GMM_Samples_Number, const int GMM_Mixtures_Number, cv::Mat& GMM_Mixtures_Responsibility )
+	{
+	    GMM_Mixtures_Responsibility = cv::Mat::zeros( GMM_Samples_Number, GMM_Mixtures_Number, CV_64FC1 );
+	}
+
+
+	void GMM_Mixtures_Responsibility_TEST( const cv::Mat& GMM_Mixtures_Responsibility )
+	{
+	    for (int iii=0; iii<GMM_Mixtures_Responsibility.rows; iii++)
+	    {
+	        double  test__GMM_Mixtures_Responsibility__sum_1 = fabs(cv::sum(GMM_Mixtures_Responsibility.row(iii))[0] - 1);
+	        if  ( !(test__GMM_Mixtures_Responsibility__sum_1 <= PARAM_Epsilon_assert) )            std::cout << "GMM_Mixtures_Responsibility_TEST  ---  " << iii+1 << "\t\t" << cv::sum(GMM_Mixtures_Responsibility.row(iii))[0] << "\t\t" << cv::sum(GMM_Mixtures_Responsibility.row(iii))[0] - 1 << "\t\t" << PARAM_Epsilon_assert << std::endl;
+	        assert( test__GMM_Mixtures_Responsibility__sum_1 <= PARAM_Epsilon_assert );
+	    }
+	}
+
+	double myLikelihood( const double GMM_Mixtures_Weights, const cv::Mat& sample_1x3, const cv::Mat& GMM_Mixtures_Means_1x3, const cv::Mat& GMM_Mixtures_Covs_INV_3x3, const double& GMM_Mixtures_Covs_SQRT_DET_3x3, const double& likelihoodConstant )
+	{
+	    cv::Mat xm_1x3 = ( sample_1x3 - GMM_Mixtures_Means_1x3 );
+	  //return GMM_Mixtures_Weights /                        GMM_Mixtures_Covs_SQRT_DET_3x3   * exp( -0.5 * cv::sum(xm_1x3 * GMM_Mixtures_Covs_INV_3x3 * xm_1x3.t())[0] );
+	    return GMM_Mixtures_Weights / ( likelihoodConstant * GMM_Mixtures_Covs_SQRT_DET_3x3 ) * exp( -0.5 * cv::sum(xm_1x3 * GMM_Mixtures_Covs_INV_3x3 * xm_1x3.t())[0] ); // cv::DECOMP_LU (default) // cv::DECOMP_CHOLESKY // cv::DECOMP_SVD
 	}
 
 	~GMEM(){
