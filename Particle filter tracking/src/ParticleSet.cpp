@@ -106,7 +106,7 @@ public:
 	    srand(time(NULL)); // seed for random number generation
 
 	                                                    //////////////////////////////////////////////////////////////////////////////////
-	    for (int iii=0; iii<particleNumber; iii++)      particles.push_back(   generateNewParticleAccordingToExistingOne( detection )   );
+	    for (int iii=0; iii<particleNumber; iii++)      particles.push_back(generateNewParticleAccordingToExistingOne( detection ));
 	                                                    //////////////////////////////////////////////////////////////////////////////////
 
 	    this->maxWeight_BestFit = -888; // reset to 'default' dummy value
@@ -136,8 +136,8 @@ public:
 	        // test - out of image bound OR non-clockwise rectangle
 	        topLeft.x     = existingParticle.xxx+varXXX;
 	        topLeft.y     = existingParticle.yyy+varYYY;
-	        bottomRight.x = existingParticle.xxx+varXXX + existingParticle.www;
-	        bottomRight.y = existingParticle.yyy+varYYY + existingParticle.hhh;
+	        bottomRight.x = existingParticle.xxx+ varXXX + existingParticle.www;
+	        bottomRight.y = existingParticle.yyy+ varYYY + existingParticle.hhh;
 
 	    }///////////////////////////////////////////////////////////////////////////////////////////////
 	    while ( frameRect.contains( topLeft     ) == false ||

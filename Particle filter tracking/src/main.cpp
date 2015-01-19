@@ -23,20 +23,23 @@ int main(int argc, char** argv){
         std::cout << std::endl << std::endl;
 
         ParticleSet particleSet;
-                    //////////////////////////////
-                    particleSet.FrameRangeX = 720;
-                    particleSet.FrameRangeY = 480;
-                    //////////////////////////////
+        //////////////////////////////
+        particleSet.FrameRangeX = 720;
+        particleSet.FrameRangeY = 480;
+        //////////////////////////////
 
 
         for (int iii=0; iii<totalFrames; iii++)
         {
                 // Read Current Frame
-                std::ostringstream              stringStream;
-                                                stringStream << stringBasePATH << iii+1 << stringExtension;
+                std::ostringstream stringStream;
+                stringStream << stringBasePATH << iii+1 << stringExtension;
                 cv::Mat currFrame = cv::imread( stringStream.str() );
                 std::cout << stringStream.str () << std::endl;
-                if (currFrame.empty())   std::cout << std::endl << std::endl << "main - Empty Image - Not read from disk" << std::endl << std::endl;
+                if (currFrame.empty()){
+
+                	std::cout << std::endl << std::endl << "main - Empty Image - Not read from disk" << std::endl << std::endl;
+                }
 
 
 
@@ -45,7 +48,7 @@ int main(int argc, char** argv){
                 {
                         std::cout << "frame " << iii+1 << " / " << totalFrames << "   \t" << "Detection Manually Annotated" << std::endl;
 
-                        particleSet.detection.initializeManually( currFrame, 448,191, 38,33 );
+                        particleSet.detection.initializeManually(currFrame, 448,191, 38,33);
                         particleSet.detection.weight = -888; // reset to 'default' dummy value
                         cv::imwrite("nemoInitial.png",particleSet.detection.roi);
                         particleSet.createSet( 100 ); // number of particles (this number will be constant - resampling with substitution is used)
