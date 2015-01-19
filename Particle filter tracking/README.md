@@ -1,4 +1,4 @@
-This folder contains the implementations of Snakes and Geodesic active contours
+This folder contains the implementations of object tracker using the particle filter
 
 To compile the code using CMakeLists.txt do the following in the directory:
 ```bash
@@ -9,5 +9,5 @@ Compile the code using the generated make file.
 
 To run the code do the following:
 ```bash
-./bin/Project04
+./bin/Project06
 ```
