@@ -48,8 +48,10 @@ public:
 		showKeyPoints(IMAGE1);
 		showKeyPoints(IMAGE2);
 		destroyAllWindows();
-		
+
 		computeNearestMatches();
+
+		applyRansac();
 	}
 
 	void applySIFT(int type){
@@ -127,6 +129,100 @@ public:
 	  imshow("Matches", vis);
 	  waitKey(0);
 	  destroyAllWindows();
+
+	}
+
+	void applyRansac(){
+
+	  int nSamples = 4;
+	  int nIterations = 20;
+	  double thresh = 0.1;
+	  int minSamples = 4;
+
+	  Mat best_hom;
+
+	  /// RANSAC loop
+	  double best_mse = numeric_limits<double>::max();
+
+	  for(int i=0; i<nIterations; i++){
+
+	    /// randomly select some keypoints
+	    vector<Point2f> kpts1(nSamples), kpts2(nSamples);
+	    for(int j=0; j <nSamples; j++){
+	      int idx = rand() % twoWay.size();
+	      kpts1[j] = keypoints1[twoWay[idx].queryIdx].pt;
+	      kpts2[j] = keypoints2[twoWay[idx].trainIdx].pt;
+	    }
+
+	    /// get and apply homography
+	    Mat hom = getPerspectiveTransform(kpts2, kpts1);
+
+	    Mat warppedImage2;
+	    warpPerspective(image2, warppedImage2, hom,  image1.size());
+
+	    /// calculate inliers and MSE
+	    int inliers_count = 0;
+	    double total_mse = 0;
+	    for(unsigned int j=0; j<keypoints1.size(); j++){
+
+	      int size = keypoints1[j].size;
+
+	      if(size < 1){
+	        continue;
+	      }
+
+	      int x = keypoints1[j].pt.x - size / 2 ;
+	      int y = keypoints1[j].pt.y - size / 2;
+	      Rect rect(x,y,size, size);
+
+	      Mat patch1 = image1(rect);
+	      Mat patch2 = warppedImage2(rect);
+
+	      Mat diff;
+	      absdiff(patch1, patch2, diff);
+	      diff.convertTo(diff, CV_32FC3);
+	      diff = diff.mul(diff);
+	      Scalar s = sum(diff);
+
+	      // calculate MSE and normalize
+	      double mse = (s.val[0] + s.val[1] + s.val[2])/(size*size*3*255*255);
+
+	      if(mse < thresh){
+	        inliers_count++;
+	        total_mse += mse;
+	      }
+	    }
+
+	    total_mse /= inliers_count;
+
+	    if(inliers_count > minSamples && total_mse < best_mse){
+	      best_mse = total_mse;
+	      best_hom = hom.clone();
+	    }
+	  }
+	  cout<<"Done."<<endl<<endl;
+
+	  Mat finalWarppedImage2;
+	  warpPerspective(image2, finalWarppedImage2, best_hom, Size(image1.cols*2, image1.rows));
+	  imshow("Image-1", image1);
+	  imshow("Wrapped Image-2", finalWarppedImage2);
+	  waitKey(0);
+	  destroyAllWindows();
+
+	  ///Merge images
+	  Mat mask;
+	  cvtColor(finalWarppedImage2, mask, CV_RGB2GRAY );
+	  threshold( mask, mask, 0, 1,THRESH_BINARY_INV );
+
+	  Rect roi(0,0, image1.cols, image1.rows);
+	  mask = mask(roi);
+	  Mat temp = finalWarppedImage2(roi);
+
+	  add(temp, image1, temp, mask);
+	  imshow("Wrapped Image-2", finalWarppedImage2);
+	  waitKey(0);
+	  destroyAllWindows();
+
 
 	}
 
